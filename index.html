@@ -32,6 +32,12 @@
   </tbody>
 </table>
 <script type="text/javascript">
+  function hasOwnProperty(obj, prop) {
+      var proto = obj.__proto__ || obj.constructor.prototype;
+      return (prop in obj) &&
+          (!(prop in proto) || proto[prop] !== obj[prop]);
+  }
+
   var Tournament = function() {
     this.players = new Array();
     this.matches = new Array();
@@ -62,7 +68,7 @@
         }
 
         if (this.players.length == nPlayers) {
-          return this.setupMatches();  
+          return this.createMatches();  
         } else {
           return false;
         }
@@ -75,7 +81,7 @@
     /**
      * Initialize match setup.
      */
-    setupMatches: function() {
+    createMatches: function() {
       if (this.mode == 'roundrobin') {
         return this.roundrobin();
       }
@@ -85,7 +91,14 @@
      */
     updateMatch: function(matchObj) {
       if (typeof matchObj == "object") {
-        this.matches[matchObj.id]
+        var id = matchObj.id;
+        console.log('Updating match with id ' + id);
+        for (var prop in matchObj) {
+          if (this.matches[id].hasOwnProperty(prop)) {
+            this.matches[id][prop] = matchObj[prop];
+          }
+        }
+        console.log('Updated ', this.matches[id]);
       } else {
         return false;
       }
@@ -113,7 +126,7 @@
           // Add match settings.
           var match = {};
 
-          match.id = this.matches.length;
+          match.id        = this.matches.length;
           match.playerIds = [this.players[i].id, this.players[j].id];
           match.winnerId  = null;
           match.round     = this.currentRound;
