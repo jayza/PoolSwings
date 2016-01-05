@@ -4,33 +4,7 @@
   <title></title>
 </head>
 <body>
-<table>
-  <tbody>
-    <tr>
-      <td>
-        John
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        Jake
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        Jonathan
-      </td>
-    </tr>
-
-    <tr>
-      <td>
-        Katie
-      </td>
-    </tr>
-  </tbody>
-</table>
+<div id="wrapper"></div>
 <script type="text/javascript">
   function hasOwnProperty(obj, prop) {
       var proto = obj.__proto__ || obj.constructor.prototype;
@@ -72,13 +46,13 @@
 
   /**
    * Class to create a tournament.
-   * @param playerCollection object Player class with players in it.
+   * @param playerClass object Player class with players in it.
    */
-  var Tournament = function(playerCollection) {
+  var Tournament = function(playerClass) {
     // Check to see if it really is a Player class.
-    if (typeof playerCollection == "object") {
-      if (hasOwnProperty(playerCollection, 'players')) {
-        this.players = (playerCollection.players.length > 0) ? playerCollection.players : new Array();
+    if (typeof playerClass == "object") {
+      if (hasOwnProperty(playerClass, 'players')) {
+        this.players = (playerClass.players.length > 0) ? playerClass.players : new Array();
       }
     } else {
       this.players = new Array();
@@ -90,6 +64,8 @@
     this.mode = 'roundrobin';
 
     this.currentRound = 0;
+
+    this.wrapper = document.getElementById('wrapper');
 
     this.create();
   }
@@ -131,8 +107,49 @@
      */
     createMatches: function() {
       if (this.mode == 'roundrobin') {
-        return this.roundrobin();
+        if (this.roundrobin()) {
+          this.renderMatches();
+        }
       }
+    },
+    /**
+     * Render the matches in the DOM.
+     */
+    renderMatches: function() {
+      if (document.getElementById('match-table')) {
+        document.getElementById('match-table').remove();
+      }
+
+      var matchTable = document.createElement('table');
+          matchTable.setAttribute('id', 'match-table');
+
+      for (var i = 0; i < this.matches.length; i++) {
+        var match = document.createElement('tr');
+            match.className = 'match';
+
+        var title = document.createElement('td');
+            title.className = 'title';
+
+            title.innerHTML = this.matches[i].title;
+
+        match.appendChild(title);
+
+        var score = document.createElement('td'),
+            winner = 'TBD';
+            score.className = 'score';
+              
+        if (this.matches[i].winnerId != null) {
+          winner = this.players[this.matches[i].winnerId].name;
+        }
+
+        score.innerHTML = winner;
+
+        match.appendChild(score);
+
+        matchTable.appendChild(match);
+      }
+
+      this.wrapper.appendChild(matchTable);
     },
     /**
      * Set winner for a match
@@ -148,6 +165,8 @@
           }
         }
         console.log('Updated ', this.matches[id]);
+
+        this.renderMatches();
       } else {
         return false;
       }
@@ -184,6 +203,8 @@
           this.matches.push(match);
         }
       }
+
+      return true;
     }
   }
 
