@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+</head>
+<body>
+<table>
+  <tbody>
+    <tr>
+      <td>
+        John
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Jake
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Jonathan
+      </td>
+    </tr>
+
+    <tr>
+      <td>
+        Katie
+      </td>
+    </tr>
+  </tbody>
+</table>
+<script type="text/javascript">
+  var Tournament = function() {
+    this.players = new Array();
+    this.matches = new Array();
+
+    // temporary mode
+    this.mode = 'roundrobin';
+
+    this.create();
+  }
+
+  Tournament.prototype = {
+    /**
+     * Create the tournament and add players.
+     */
+    create: function() {
+      var nPlayers = parseInt(prompt('How many?'));
+
+      if (typeof nPlayers == "number") {
+        for (var i = 0; i < nPlayers; i++) {
+          var player = {};
+
+          player.id = i;
+          player.name = prompt('Name of player ' + (i + 1));
+
+          this.players.push(player);
+        }
+
+        if (this.players.length == nPlayers) {
+          return this.setupMatches();  
+        } else {
+          return false;
+        }
+        
+      } else {
+        console.log('you have to enter an integer.');
+        return false;
+      }
+    },
+    /**
+     * Initialize match setup.
+     */
+    setupMatches: function() {}
+      if (this.mode == 'roundrobin') {
+        return this.roundrobin();
+      }
+    },
+    /**
+     * Game Modes.
+     */
+    roundrobin: function() {
+      for (var i = 0; i < this.players.length; i++) {
+        for (var j = 0; j < this.players.length; j++) {
+          if (j == i) continue;
+
+          // Check to see whether to add match depending on if already match exists.
+          if (this.matches.length > 0) {
+            var matchExists = false;
+            for (var k = 0; k < this.matches.length; k++) {
+              if (this.matches[k].playerIds.indexOf(i) >= 0 && this.matches[k].playerIds.indexOf(j) >= 0) {
+                matchExists = true;
+              }
+            }
+
+            if (matchExists) continue;
+          }
+
+          // Add match settings.
+          var match = {};
+
+          match.playerIds = [this.players[i].id, this.players[j].id];
+          match.title = this.players[i].name + ' vs. ' + this.players[j].name;
+
+          this.matches.push(match);
+        }
+      }
+    }
+  }
+
+  var tmnt = new Tournament();
+</script>
+</body>
+</html>
