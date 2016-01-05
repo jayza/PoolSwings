@@ -38,8 +38,52 @@
           (!(prop in proto) || proto[prop] !== obj[prop]);
   }
 
-  var Tournament = function() {
+  var Player = function() {
     this.players = new Array();
+  }
+
+  Player.prototype = {
+    create: function(playerObj) {
+      if (typeof playerObj == "object") {
+        var player = {};
+
+        player.id = this.players.length;
+        player.name = null;
+
+        for (var prop in playerObj) {
+          if (hasOwnProperty(player, prop)) {
+            player[prop] = playerObj[prop];
+          }
+        }
+
+        this.players.push(player);
+      } else {
+        console.log('You have to provide an object with information');
+      }
+    }
+  }
+
+  var players = new Player();
+
+  players.create({name: 'Jake'});
+  players.create({name: 'Jonathan'});
+  players.create({name: 'Katie'});
+  players.create({name: 'John'});
+
+  /**
+   * Class to create a tournament.
+   * @param playerCollection object Player class with players in it.
+   */
+  var Tournament = function(playerCollection) {
+    // Check to see if it really is a Player class.
+    if (typeof playerCollection == "object") {
+      if (hasOwnProperty(playerCollection, 'players')) {
+        this.players = (playerCollection.players.length > 0) ? playerCollection.players : new Array();
+      }
+    } else {
+      this.players = new Array();
+    }
+    
     this.matches = new Array();
 
     // temporary mode
@@ -55,28 +99,32 @@
      * Create the tournament and add players.
      */
     create: function() {
-      var nPlayers = parseInt(prompt('How many?'));
+      var nPlayers = this.players.length;
 
-      if (typeof nPlayers == "number") {
-        for (var i = 0; i < nPlayers; i++) {
-          var player = {};
+      if (nPlayers == 0) {
+        nPlayers = parseInt(prompt('How many?'));
 
-          player.id = i;
-          player.name = prompt('Name of player ' + (i + 1));
+        // @todo fix better way to check if prompt gives an int.
+        if (typeof nPlayers == "number") {
+          for (var i = 0; i < nPlayers; i++) {
+            var player = {};
 
-          this.players.push(player);
+            player.id = i;
+            player.name = prompt('Name of player ' + (i + 1));
+
+            this.players.push(player);
+          } 
+        } else {
+          console.log('you have to enter an integer.');
+          return false;
         }
+      }
 
-        if (this.players.length == nPlayers) {
+      if (this.players.length == nPlayers) {
           return this.createMatches();  
         } else {
           return false;
         }
-        
-      } else {
-        console.log('you have to enter an integer.');
-        return false;
-      }
     },
     /**
      * Initialize match setup.
@@ -94,6 +142,7 @@
         var id = matchObj.id;
         console.log('Updating match with id ' + id);
         for (var prop in matchObj) {
+          // Check if the property of the update object exists in the match object.
           if (hasOwnProperty(this.matches[id], prop)) {
             this.matches[id][prop] = matchObj[prop];
           }
@@ -138,7 +187,7 @@
     }
   }
 
-  var tmnt = new Tournament();
+  var tmnt = new Tournament(players);
 </script>
 </body>
 </html>
