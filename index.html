@@ -94,7 +94,7 @@
         var id = matchObj.id;
         console.log('Updating match with id ' + id);
         for (var prop in matchObj) {
-          if (this.matches[id].hasOwnProperty(prop)) {
+          if (hasOwnProperty(this.matches[id], prop)) {
             this.matches[id][prop] = matchObj[prop];
           }
         }
