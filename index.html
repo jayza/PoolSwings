@@ -12,11 +12,17 @@
           (!(prop in proto) || proto[prop] !== obj[prop]);
   }
 
+  /**
+   * Player class.
+   */
   var Player = function() {
     this.players = new Array();
   }
 
   Player.prototype = {
+    /**
+     * Create a player.
+     */
     create: function(playerObj) {
       if (typeof playerObj == "object") {
         var player = {};
