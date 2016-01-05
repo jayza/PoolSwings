@@ -39,6 +39,8 @@
     // temporary mode
     this.mode = 'roundrobin';
 
+    this.currentRound = 0;
+
     this.create();
   }
 
@@ -73,9 +75,19 @@
     /**
      * Initialize match setup.
      */
-    setupMatches: function() {}
+    setupMatches: function() {
       if (this.mode == 'roundrobin') {
         return this.roundrobin();
+      }
+    },
+    /**
+     * Set winner for a match
+     */
+    updateMatch: function(matchObj) {
+      if (typeof matchObj == "object") {
+        this.matches[matchObj.id]
+      } else {
+        return false;
       }
     },
     /**
@@ -101,8 +113,11 @@
           // Add match settings.
           var match = {};
 
+          match.id = this.matches.length;
           match.playerIds = [this.players[i].id, this.players[j].id];
-          match.title = this.players[i].name + ' vs. ' + this.players[j].name;
+          match.winnerId  = null;
+          match.round     = this.currentRound;
+          match.title     = this.players[i].name + ' vs. ' + this.players[j].name;
 
           this.matches.push(match);
         }
