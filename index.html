@@ -2,24 +2,43 @@
 <html>
 <head>
   <title></title>
+  <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
 <div id="wrapper"></div>
 <script type="text/javascript">
-  function hasOwnProperty(obj, prop) {
-      var proto = obj.__proto__ || obj.constructor.prototype;
-      return (prop in obj) &&
-          (!(prop in proto) || proto[prop] !== obj[prop]);
-  }
+    function hasOwnProperty(obj, prop) {
+        var proto = obj.__proto__ || obj.constructor.prototype;
+        return (prop in obj) &&
+            (!(prop in proto) || proto[prop] !== obj[prop]);
+    }
+    function shuffle(array) {
+      var currentIndex = array.length, temporaryValue, randomIndex;
+
+      // While there remain elements to shuffle...
+      while (0 !== currentIndex) {
+
+        // Pick a remaining element...
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex -= 1;
+
+        // And swap it with the current element.
+        temporaryValue = array[currentIndex];
+        array[currentIndex] = array[randomIndex];
+        array[randomIndex] = temporaryValue;
+      }
+
+      return array;
+    }
 
   /**
    * Player class.
    */
-  var Player = function() {
+  var Players = function() {
     this.players = new Array();
   }
 
-  Player.prototype = {
+  Players.prototype = {
     /**
      * Create a player.
      */
@@ -43,7 +62,7 @@
     }
   }
 
-  var players = new Player();
+  var players = new Players();
 
   players.create({name: 'Jake'});
   players.create({name: 'Jonathan'});
@@ -56,7 +75,7 @@
    */
   var Tournament = function(playerClass) {
     // Check to see if it really is a Player class.
-    if (typeof playerClass == "object") {
+    if (playerClass instanceof Players) {
       if (hasOwnProperty(playerClass, 'players')) {
         this.players = (playerClass.players.length > 0) ? playerClass.players : new Array();
       }
@@ -146,6 +165,7 @@
               
         if (this.matches[i].winnerId != null) {
           winner = this.players[this.matches[i].winnerId].name;
+          score.className += ' announced';
         }
 
         score.innerHTML = winner;
@@ -201,14 +221,16 @@
           var match = {};
 
           match.id        = this.matches.length;
-          match.playerIds = [this.players[i].id, this.players[j].id];
+          match.playerIds = shuffle([this.players[i].id, this.players[j].id]);
           match.winnerId  = null;
           match.round     = this.currentRound;
-          match.title     = this.players[i].name + ' vs. ' + this.players[j].name;
+          match.title     = this.players[match.playerIds[0]].name + ' vs. ' + this.players[match.playerIds[1]].name;
 
           this.matches.push(match);
         }
       }
+
+      this.matches = shuffle(this.matches);
 
       return true;
     }

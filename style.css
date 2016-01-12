@@ -1,0 +1,10 @@
+.score {
+  transition: background-color 2s;
+  -webkit-transition: background 2s;
+}
+
+.score.announced {
+  transition: background 2s;
+  -webkit-transition: background 2s;
+  background: gold;
+}
