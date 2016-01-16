@@ -148,6 +148,21 @@
       var matchTable = document.createElement('table');
           matchTable.setAttribute('id', 'match-table');
 
+      var tableHeader = document.createElement('thead');
+
+      var headerPlayer = document.createElement('td');
+          headerPlayer.innerHTML = 'Match-up';
+
+      var headerScore = document.createElement('td');
+          headerScore.innerHTML = 'Winner';
+
+      tableHeader.appendChild(headerPlayer);
+      tableHeader.appendChild(headerScore);
+
+      matchTable.appendChild(tableHeader);
+
+      var tableBody = document.createElement('tbody');
+
       for (var i = 0; i < this.matches.length; i++) {
         var match = document.createElement('tr');
             match.className = 'match';
@@ -172,10 +187,78 @@
 
         match.appendChild(score);
 
-        matchTable.appendChild(match);
+        tableBody.appendChild(match);
       }
 
+      matchTable.appendChild(tableBody);
+
       this.wrapper.appendChild(matchTable);
+
+      this.renderScoreboard();
+    },
+    renderScoreboard: function() {
+      var that = this;
+
+      if (document.getElementById('scoreboard-table')) {
+        document.getElementById('scoreboard-table').remove();
+      }
+
+      var scoreboardTable = document.createElement('table');
+          scoreboardTable.id = 'scoreboard-table';
+
+      var scoreboardHeader = document.createElement('thead');
+
+      var playerHeader = document.createElement('td');
+          playerHeader.innerHTML = 'Player';
+
+      var scoreHeader = document.createElement('td');
+          scoreHeader.innerHTML = 'Score';
+
+      scoreboardHeader.appendChild(playerHeader);
+      scoreboardHeader.appendChild(scoreHeader);
+
+      scoreboardTable.appendChild(scoreboardHeader);
+
+      var scoreboardBody = document.createElement('tbody');
+
+      // Calculate scores for each player.
+      this.players.map(function(player) {
+        var score = 0;
+
+        that.matches.forEach(function(match) {
+          if (match.winnerId != null) {
+            score += (match.winnerId == player.id) ? 1 : 0;
+          } else {
+            score += 0;
+          }
+        });
+
+        return {id: player.id, name: player.name, score: score};
+      })
+      // Sort by score lowest to highest.
+      .sort(function(a, b) {
+        return a.score - b.score;
+      })
+      // Reverse order.
+      .reverse()
+      // Build elements.
+      .forEach(function(player, i) {
+        var playerRow = document.createElement('tr');
+
+        var playerName = document.createElement('td');
+            playerName.innerHTML = player.name;
+        
+        var playerScore = document.createElement('td');  
+        playerScore.innerHTML = player.score;
+
+        playerRow.appendChild(playerName);
+        playerRow.appendChild(playerScore);
+        scoreboardBody.appendChild(playerRow);
+      });
+
+      scoreboardTable.appendChild(scoreboardBody);
+
+      this.wrapper.appendChild(scoreboardTable);
     },
     /**
      * Set winner for a match
